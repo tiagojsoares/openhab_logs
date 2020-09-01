@@ -1,0 +1,52 @@
+<div class="example-header">
+  <mat-form-field>
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+  </mat-form-field>
+</div>
+
+<div class="example-container mat-elevation-z8">
+
+  <mat-table [dataSource]="dataSource" matSort >
+
+    <!-- ID Column -->
+    <ng-container matColumnDef="DateT">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Date Time  </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.datetime}} </mat-cell>
+    </ng-container>
+
+    <!-- Progress Column -->
+    <ng-container matColumnDef="Event">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Eventos </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.event}} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;">
+    </mat-row>
+  </mat-table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+</div>
+<br>
+<mat-checkbox class="example-margin" name="login" id='login' [(ngModel)]="login">Login</mat-checkbox>
+<form #formLogin="ngForm" class="example-form">
+  <span *ngIf="login">
+  <mat-form-field class="example-full-width">
+    <mat-label>User</mat-label>
+    <input matInput placeholder="Ex. Admin" id="user" name="user" [(ngModel)]="user" [disabled]="session" ngModel  user>
+  </mat-form-field>
+
+  <mat-form-field class="example-full-width">
+    <mat-label>Password</mat-label>
+    <input matInput type="password" id="password" name="password" [(ngModel)]="password" ngModel  user [disabled]="session" required>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" (click)="Efet_login()" [disabled]="!formLogin.form.valid">{{!session ? 'Login' : 'Logout'}}&nbsp;</button>
+  <br>
+
+  <br>
+  <mat-checkbox class="example-margin" (change)='clear()' name="sts" id='sts' [(ngModel)]="sts" [disabled]="!session">Status&nbsp;</mat-checkbox>
+  <mat-checkbox class="example-margin" (change)='clear()' name="cld" id='cld' [(ngModel)]="cld" [disabled]="!session">CLD</mat-checkbox>
+</span>
+</form>
+
