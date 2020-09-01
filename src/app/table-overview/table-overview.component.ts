@@ -16,7 +16,9 @@ import { NgForm } from '@angular/forms';
 })
 
 export class TableOverviewExample {
-  displayedColumns = ["DateT", "Event"];
+  checks: EventLog[];
+
+  displayedColumns = ["DateT", "Event", 'check'];
   dataSource: MatTableDataSource<EventLog>;
   logs: any;
   events: EventLog[] = [];
@@ -24,24 +26,18 @@ export class TableOverviewExample {
   hide = true;
   user;
   password;
-  session=false;
-  sts:any=true;
-  cld:any=false;
-  login:any=false;
+  session = false;
+  sts: any = true;
+  cld: any = false;
+  login: any = false;
+  check: any;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('formLogin', { static: true }) formLogin: NgForm;
 
   constructor(private eventService: TableService) {
-
-
-
-    // Create 100 users
-    const users: UserData[] = [];
-    for (let i = 1; i <= 100; i++) {
-      users.push(createNewUser(i));
-    }
+    this.ObterEvento();
 
     // Assign the data to the data source for the table to render
     this.dataSource = new MatTableDataSource(this.events);
@@ -55,6 +51,15 @@ export class TableOverviewExample {
     this.TimerValida();
   }
 
+  listarTodos(): EventLog[] {
+    return this.eventService.listarTodos();
+  }
+
+
+
+
+
+
   /**
    * Set the paginator and sort after the view init since this component will
    * be able to query its view for the initialized paginator and sort.
@@ -63,7 +68,7 @@ export class TableOverviewExample {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-  clear(){
+  clear() {
     this.events = [];
     this.dataSource = new MatTableDataSource(this.events);
     this.dataSource.paginator = this.paginator;
@@ -95,12 +100,17 @@ export class TableOverviewExample {
 
 
             if (temp.length == 2) {
-              temp[1] = temp[1].replace('changed from UNDEF to ON','mudou de UNDEF para ON');
-              temp[1] = temp[1].replace('changed from NULL to UNDEF','mudou de NULL para UNDEF');
-              temp[1] = temp[1].replace('predicted to become ON','previsto para se tornar ON');
-              temp[1] = temp[1].replace('received command ON','comando recebido ON');
-              temp[1] = temp[1].replace('changed from NULL to UNDEF','mudou de NULL para UNDEF');
-              temp[1] = temp[1].replace('changed from NULL to UNDEF','mudou de NULL para UNDEF');
+              temp[1] = temp[1].replace('changed from UNDEF to ON', 'mudou de UNDEF para ON');
+              temp[1] = temp[1].replace('changed from NULL to UNDEF', 'mudou de NULL para UNDEF');
+              temp[1] = temp[1].replace('predicted to become ON', 'previsto para se tornar ON');
+              temp[1] = temp[1].replace('received command ON', 'comando recebido ON');
+              temp[1] = temp[1].replace('changed from NULL to UNDEF', 'mudou de NULL para UNDEF');
+              temp[1] = temp[1].replace('changed from NULL to UNDEF', 'mudou de NULL para UNDEF');
+              temp[1] = temp[1].replace('changed from UNDEF to OFF', 'mudou de UNDEF para OFF');
+              temp[1] = temp[1].replace('changed from OFF to ON', 'mudou de OFF para ON');
+              temp[1] = temp[1].replace('changed from ON to OFF', 'mudou de ON para OFF');
+
+
 
 
               let str: string = temp[1];
@@ -131,8 +141,8 @@ export class TableOverviewExample {
             ));
 
         }
-        this.events.reverse();
 
+        this.events.reverse();
 
       });
   }
@@ -143,7 +153,13 @@ export class TableOverviewExample {
       if (this.events.length === 0) {
         this.ObterEvento();
       } else {
-       //const ProjetosFilter = projetos.filter(projeto => projeto.tipo === tipo);
+        this.checks = this.listarTodos();
+        for (let index = 0; index < this.checks.length; index++) {
+
+          const i = this.events.findIndex(e => e.datetime === this.checks[index].toString());
+          this.events[i].check = true;
+        }
+
 
         this.dataSource = new MatTableDataSource(this.events);
         this.dataSource.paginator = this.paginator;
@@ -159,19 +175,19 @@ export class TableOverviewExample {
 
   }
 
-  Efet_login():void{
-    if(this.session){
+  Efet_login(): void {
+    if (this.session) {
       this.session = false;
       this.user = '';
       this.password = '';
-}
-   if(this.user==='controller'&& this.password==="P@ssw0rd123"){
-          this.session = true;
+    }
+    if (this.user === 'controller' && this.password === "P@ssw0rd123") {
+      this.session = true;
 
-   }else{
-     this.user = '';
-     this.password = '';
-   }
+    } else {
+      this.user = '';
+      this.password = '';
+    }
 
   }
   applyFilter(filterValue: string) {
@@ -180,68 +196,10 @@ export class TableOverviewExample {
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
   }
+
+  gravarEvent(row: any, event: any): void {
+    this.eventService.gravarEventos(row, event);
+  }
 }
 
-/** Builds and returns a new User. */
-function createNewUser(id: number): UserData {
-  const name =
-    NAMES[Math.round(Math.random() * (NAMES.length - 1))] +
-    " " +
-    NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) +
-    ".";
-
-  return {
-    id: id.toString(),
-    name: name,
-    progress: Math.round(Math.random() * 100).toString(),
-    color: COLORS[Math.round(Math.random() * (COLORS.length - 1))]
-  };
-}
-
-/** Constants used to fill up our data base. */
-const COLORS = [
-  "maroon",
-  "red",
-  "orange",
-  "yellow",
-  "olive",
-  "green",
-  "purple",
-  "fuchsia",
-  "lime",
-  "teal",
-  "aqua",
-  "blue",
-  "navy",
-  "black",
-  "gray"
-];
-const NAMES = [
-  "Maia",
-  "Asher",
-  "Olivia",
-  "Atticus",
-  "Amelia",
-  "Jack",
-  "Charlotte",
-  "Theodore",
-  "Isla",
-  "Oliver",
-  "Isabella",
-  "Jasper",
-  "Cora",
-  "Levi",
-  "Violet",
-  "Arthur",
-  "Mia",
-  "Thomas",
-  "Elizabeth"
-];
-
-export interface UserData {
-  id: string;
-  name: string;
-  progress: string;
-  color: string;
-}
 
