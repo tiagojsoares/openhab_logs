@@ -11,19 +11,25 @@
     <!-- ID Column -->
     <ng-container matColumnDef="DateT">
       <mat-header-cell *matHeaderCellDef mat-sort-header>Date Time </mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{row.datetime}} </mat-cell>
+      <mat-cell *matCellDef="let row" [style.background-color]="row.check===true ? '' : 'red'"
+        [style.color]="row.check===true ? '' : 'white'">
+        {{row.datetime}} </mat-cell>
     </ng-container>
 
     <!-- Progress Column -->
     <ng-container matColumnDef="Event">
       <mat-header-cell *matHeaderCellDef mat-sort-header> Eventos </mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{row.event}} </mat-cell>
+      <mat-cell *matCellDef="let row" [style.background-color]="row.check===true ? '' : 'red'"
+        [style.color]="row.check===true ? '' : 'white'"> {{row.event}} </mat-cell>
     </ng-container>
 
     <!-- Progress Column -->
     <ng-container matColumnDef="check">
       <mat-header-cell *matHeaderCellDef mat-sort-header> Check </mat-header-cell>
-      <mat-cell *matCellDef="let row"><mat-checkbox class="example-margin" [(ngModel)]="row.check" (change)='gravarEvent(row,$event)'>acknowledge &nbsp;</mat-checkbox>
+      <mat-cell *matCellDef="let row" [style.background-color]="row.check===true ? '' : 'red'"
+        [style.color]="row.check===true ? '' : 'white'">
+        <mat-checkbox class="example-margin" [(ngModel)]="row.check" (change)='gravarEvent(row,$event)'>acknowledge
+          &nbsp;</mat-checkbox>
       </mat-cell>
     </ng-container>
 
@@ -38,7 +44,9 @@
   <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 </div>
 <br>
-<mat-checkbox class="example-margin" name="login" id='login' [(ngModel)]="login">Login</mat-checkbox>
+<mat-checkbox class="example-margin" name="login" id='login' [(ngModel)]="login">Login&nbsp;</mat-checkbox>
+<mat-checkbox class="example-margin" (change)='clear()' name="check" id='check' [(ngModel)]="check">
+  acknowledged </mat-checkbox>
 <form #formLogin="ngForm" class="example-form">
   <span *ngIf="login">
     <mat-form-field class="example-full-width">

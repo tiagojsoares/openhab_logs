@@ -16,21 +16,23 @@ import { NgForm } from '@angular/forms';
 })
 
 export class TableOverviewExample {
-  checks: EventLog[];
+  checks: EventLog[] = [];
 
   displayedColumns = ["DateT", "Event", 'check'];
   dataSource: MatTableDataSource<EventLog>;
-  logs: any;
+  logs: any = '';
   events: EventLog[] = [];
   filter: string = '';
   hide = true;
-  user;
-  password;
+  user = '';
+  password = '';
   session = false;
   sts: any = true;
   cld: any = false;
+  checked: any = false;
   login: any = false;
-  check: any;
+  check: any = false;
+
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -38,13 +40,8 @@ export class TableOverviewExample {
 
   constructor(private eventService: TableService) {
     this.ObterEvento();
-
     // Assign the data to the data source for the table to render
     this.dataSource = new MatTableDataSource(this.events);
-
-
-
-
   }
 
   ngOnInit() {
@@ -58,22 +55,13 @@ export class TableOverviewExample {
 
 
 
-
-
-  /**
-   * Set the paginator and sort after the view init since this component will
-   * be able to query its view for the initialized paginator and sort.
-   */
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
   clear() {
     this.events = [];
     this.dataSource = new MatTableDataSource(this.events);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
+
 
   ObterEvento() {
     this.events = [];
@@ -94,9 +82,10 @@ export class TableOverviewExample {
 
             let temp = logs[index].split('HL746_');
             let time = (logs[index].split(' '));
-            let letTimeTemp = time[1].split('.');
+            let letTimeTemp = time[1].trim();
 
-            let datetime = time[0] + " " + letTimeTemp[0];
+
+            let datetime = time[0] + " " + letTimeTemp;
 
 
             if (temp.length == 2) {
@@ -119,12 +108,12 @@ export class TableOverviewExample {
 
               if (logs[index].includes('STS') && this.sts) {
                 arr_logs.push(str);
-                date_time_arr.push(datetime);
+                date_time_arr.push(datetime+' STS');
               }
 
               if (logs[index].includes('CLD') && this.cld) {
                 arr_logs.push(str);
-                date_time_arr.push(datetime);
+                date_time_arr.push(datetime+' CLD');
               }
 
             }
@@ -137,27 +126,44 @@ export class TableOverviewExample {
           this.events.push(
             new EventLog(
               date_time_arr[index],
-              arr_logs[index]
+              arr_logs[index],
+              false
             ));
 
         }
 
         this.events.reverse();
-
+        /*let array = this.events;
+        let unico = array.filter(function (elem, index, self) {
+          return index === self.indexOf(elem);
+        });*/
       });
   }
 
   TimerValida() {
+
     const timeValue = setInterval((interval) => {
 
       if (this.events.length === 0) {
         this.ObterEvento();
       } else {
+
         this.checks = this.listarTodos();
+
         for (let index = 0; index < this.checks.length; index++) {
 
-          const i = this.events.findIndex(e => e.datetime === this.checks[index].toString());
-          this.events[i].check = true;
+          const i = this.events.findIndex(e => e.datetime.toString() === this.checks[index].toString());
+          if (i != -1) {
+            this.events[i].check = true;
+
+
+
+
+            if (!this.check) {
+              this.events.splice(i, 1);
+            }
+          }
+
         }
 
 
@@ -169,8 +175,9 @@ export class TableOverviewExample {
         this.applyFilter(this.filter);
 
 
+
       }
-    }, 2000);
+    }, 1000);
 
 
   }
@@ -199,6 +206,15 @@ export class TableOverviewExample {
 
   gravarEvent(row: any, event: any): void {
     this.eventService.gravarEventos(row, event);
+
+    if (event.checked === true) {
+      const i = this.events.findIndex(e => e.datetime === row.datetime.toString());
+      this.events.splice(i, 1);
+      //this.dataSource = new MatTableDataSource(this.events);
+      //this.dataSource.paginator = this.paginator;
+      ///this.dataSource.sort = this.sort;
+    }
+    ///this.clear();
   }
 }
 

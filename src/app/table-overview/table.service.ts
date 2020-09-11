@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { switchMap } from 'rxjs/operators';
+import { switchMap, retry, catchError } from 'rxjs/operators';
 import { EventLog } from './EventLog';
+import { throwError } from 'rxjs';
 
 @Injectable()
 export class TableService {
@@ -12,6 +13,14 @@ export class TableService {
 
     return this.http.get('/assets/filePath.json')
       .pipe(
+        retry(3),
+        catchError(error => {
+          console.error('Inside catchError: ', error);
+
+
+
+          return throwError('throwError: Error');
+        }),
         switchMap((response: any) => this.http.get(response.pathToFile, {
           responseType: 'text'
         }))
@@ -21,18 +30,25 @@ export class TableService {
   gravarEventos(row: any, event: any): void {
     if (event.checked === true) {
       const tarefas = this.listarTodos();
-      let date = row.datetime;     
-      
-      tarefas.push(date);     
+      let date = row.datetime;
+
+      tarefas.push(date);
       localStorage["eventos"] = JSON.stringify(tarefas);
-      
+
     } else {
-      // console.log('Falso');
+      this.remover(row.datetime);
+      console.log('Falso');
     }
   }
 
- 
 
+  remover(id: any): void {
+    let tarefas: EventLog[] = this.listarTodos();
+    console.log(id);
+
+    tarefas = tarefas.filter(tarefa => tarefa !== id);
+    localStorage["eventos"] = JSON.stringify(tarefas);
+  }
 
   listarTodos(): EventLog[] {
     const tarefas = localStorage["eventos"];
