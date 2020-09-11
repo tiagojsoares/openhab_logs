@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>OpenhabLogs</title>
@@ -9,7 +10,28 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
+
 <body class="mat-typography">
+  <script type="text/javascript" src="http://code.jquery.com/jquery-2.2.2.min.js"></script>
+  <script>
+    setInterval(function () {
+      $.ajax({
+        beforeSend: function () {
+
+        },
+        url: '../assets/ln_log_events.html',
+        success: function (data) {
+          let rowEventsLog = data.split("\n");
+          rowEventsLog = $.map(rowEventsLog, function (v) { return v === "" ? null : v; });
+          console.log(rowEventsLog.length);
+        }
+      });
+
+    }, 1000)
+
+
+  </script>
   <app-root></app-root>
 </body>
+
 </html>

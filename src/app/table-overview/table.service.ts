@@ -55,4 +55,5 @@ export class TableService {
     //Operador Ternario
     return tarefas ? JSON.parse(tarefas) : [];
   }
+
 }
